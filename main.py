@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+import Intro
 import time
 import pygame as pg
 from pygame.locals import *
-from helpers import draw_image, draw_text, lf, tc
+from helpers import LinearTransform, draw_image, draw_text, lf, tc, lbg
 
 pg.init()
 
@@ -12,7 +13,16 @@ surface = pg.display.set_mode()
 
 timer = 0
 
+def get_timer() -> int:
+    return timer
+
 pg.display.set_caption("Confronting Yourself")
+
+backgrounds = {
+    "aiback": lbg("aiback.png"),
+    "aifloor": lbg("aifloor.png"),
+    "aigreen": lbg("aigreen.png"),
+}
 
 title_card = {
     "act1": tc("act1.png"),
@@ -59,48 +69,6 @@ def draw_act1(pos: pg.Vector2):
         (4.4, 4.4),
     )
 
-class LinearTransform:
-    start_pos: pg.Vector2
-    end_pos: pg.Vector2
-    duration: float
-    start_time: float | None
-    is_complete: bool
-    is_started: bool
-
-    def __init__(self, start_pos: pg.Vector2, end_pos: pg.Vector2, duration: float):
-        self.start_pos = start_pos
-        self.end_pos = end_pos
-        self.duration = duration
-        self.start_time = None
-        self.is_complete = False
-        self.is_started = False
-
-    def begin(self):
-        self.start_time = timer
-        self.is_complete = False
-        self.is_started = True
-
-    def update(self) -> tuple[pg.Vector2, float]:
-        if not self.is_started:
-            return self.start_pos, 0.0
-        if self.start_time is None or self.is_complete:
-            return self.end_pos, 1.0
-
-        elapsed = timer - self.start_time
-        t = min(elapsed / self.duration, 1.0)
-
-        current_pos = pg.Vector2(
-            self.start_pos.x + (self.end_pos.x - self.start_pos.x) * t,
-            self.start_pos.y + (self.end_pos.y - self.start_pos.y) * t,
-        )
-
-        if t >= 1.0:
-            self.is_complete = True
-
-        return current_pos, t
-
-target_x = 270
-
 confronting_timer = LinearTransform(
     pg.Vector2(-2000, 10),
     pg.Vector2(270, 10),
@@ -121,41 +89,85 @@ act1_timer = LinearTransform(
     pg.Vector2(270, 10),
     500.0,
 )
+black_op = 255
 
-confronting_timer.begin()
-redcircle_timer.begin()
+confronting_timer.begin(get_timer())
+redcircle_timer.begin(get_timer())
 
-def draw_title():
-    global confronting_timer, redcircle_timer, yourself_timer
+_ending = False
 
-    if timer >= 300.0 and not yourself_timer.is_started:
-        yourself_timer.begin()
-    if timer >= 600.0 and not act1_timer.is_started:
-        act1_timer.begin()
+def process_title():
+    global confronting_timer, redcircle_timer, yourself_timer, act1_timer
+    timer = get_timer()
 
-    draw_red_circle(redcircle_timer.update()[0])
-    draw_confronting(confronting_timer.update()[0])
-    draw_yourself(yourself_timer.update()[0])
-    draw_act1(act1_timer.update()[0])
+    huh = pg.Surface((surface.get_width(), surface.get_height()), pg.SRCALPHA)
+    huh.fill((0, 0, 0, black_op))
 
-started = False
+    surface.blit(huh, (0, 0))
 
-while True:
-    for event in pg.event.get():
-        if event.type == QUIT:
-            pg.quit()
-            break
+    draw_red_circle(redcircle_timer.update(timer)[0])
+    draw_confronting(confronting_timer.update(timer)[0])
+    draw_yourself(yourself_timer.update(timer)[0])
+    draw_act1(act1_timer.update(timer)[0])
 
-    surface.fill((0, 0, 0))
+def process_intro():
+    global confronting_timer, redcircle_timer, yourself_timer, act1_timer, _ending, black_op
 
-    draw_title()
+    if get_timer() >= 300.0 and not yourself_timer.is_started:
+        yourself_timer.begin(timer)
+    if get_timer() >= 600.0 and not act1_timer.is_started:
+        act1_timer.begin(timer)
+    if not _ending and get_timer() >= 2500.0:
+        confronting_timer = LinearTransform(
+            pg.Vector2(270, 10),
+            pg.Vector2(-2000, 10),
+            500.0,
+        )
+        redcircle_timer = LinearTransform(
+            pg.Vector2(270, 10),
+            pg.Vector2(2000, 10),
+            500.0,
+        )
+        yourself_timer = LinearTransform(
+            pg.Vector2(270, 10),
+            pg.Vector2(-2000, 10),
+            500.0,
+        )
+        act1_timer = LinearTransform(
+            pg.Vector2(270, 10),
+            pg.Vector2(2000, 10),
+            500.0,
+        )
+        confronting_timer.begin(get_timer())
+        redcircle_timer.begin(get_timer())
+        yourself_timer.begin(get_timer())
+        act1_timer.begin(get_timer())
+        _ending = True
+    if get_timer() >= 2000.0:
+        black_op -= 10
+        if black_op < 0:
+            black_op = 0
+    process_title()
 
-    dt = FramePerSec.get_fps() / 1000
+backgrounds["aifloor"] = pg.transform.scale(backgrounds["aifloor"], (surface.get_width() * 1.5, surface.get_height() * 1.5))
+if __name__ == "__main__":
+    while True:
+        for event in pg.event.get():
+            if event.type == QUIT:
+                pg.quit()
+                break
 
-    draw_text(surface, fonts["sonic"], f"FPS: {FramePerSec.get_fps():.2f}", pg.Vector2(0, 30))
-    draw_text(surface, fonts["sonic"], f"timer: {timer}", pg.Vector2(0, 70))
-    draw_text(surface, fonts["sonic"], f"DT: {dt:.4f}", pg.Vector2(0, 110))
+        surface.fill((0, 0, 0))
+        surface.blit(backgrounds["aifloor"], (0, -170))
 
-    pg.display.update()
-    FramePerSec.tick(FPS)
-    timer += FramePerSec.get_time()
+        process_intro()
+
+        dt = FramePerSec.get_fps() / 1000
+
+        draw_text(surface, fonts["sonic"], f"FPS: {FramePerSec.get_fps():.2f}", pg.Vector2(0, 30))
+        draw_text(surface, fonts["sonic"], f"TIMER: {timer}", pg.Vector2(0, 70))
+        draw_text(surface, fonts["sonic"], f"DT: {dt:.4f}", pg.Vector2(0, 110))
+
+        pg.display.update()
+        FramePerSec.tick(FPS)
+        timer += FramePerSec.get_time()
