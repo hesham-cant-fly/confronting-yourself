@@ -81,6 +81,8 @@ class LinearTransform:
         self.is_started = True
 
     def update(self) -> tuple[pg.Vector2, float]:
+        if not self.is_started:
+            return self.start_pos, 0.0
         if self.start_time is None or self.is_complete:
             return self.end_pos, 1.0
 
@@ -114,6 +116,11 @@ yourself_timer = LinearTransform(
     pg.Vector2(270, 10),
     500.0,
 )
+act1_timer = LinearTransform(
+    pg.Vector2(2000, 10),
+    pg.Vector2(270, 10),
+    500.0,
+)
 
 confronting_timer.begin()
 redcircle_timer.begin()
@@ -121,13 +128,15 @@ redcircle_timer.begin()
 def draw_title():
     global confronting_timer, redcircle_timer, yourself_timer
 
-    if timer >= 1000.0 and not yourself_timer.is_started:
+    if timer >= 300.0 and not yourself_timer.is_started:
         yourself_timer.begin()
+    if timer >= 600.0 and not act1_timer.is_started:
+        act1_timer.begin()
 
     draw_red_circle(redcircle_timer.update()[0])
     draw_confronting(confronting_timer.update()[0])
     draw_yourself(yourself_timer.update()[0])
-    draw_act1(pg.Vector2(270, 10))
+    draw_act1(act1_timer.update()[0])
 
 started = False
 
@@ -143,9 +152,9 @@ while True:
 
     dt = FramePerSec.get_fps() / 1000
 
-    draw_text(surface, fonts["sonic"], f"fps: {FramePerSec.get_fps():.2f}", pg.Vector2(0, 30))
+    draw_text(surface, fonts["sonic"], f"FPS: {FramePerSec.get_fps():.2f}", pg.Vector2(0, 30))
     draw_text(surface, fonts["sonic"], f"timer: {timer}", pg.Vector2(0, 70))
-    draw_text(surface, fonts["sonic"], f"dt: {dt}", pg.Vector2(0, 110))
+    draw_text(surface, fonts["sonic"], f"DT: {dt:.4f}", pg.Vector2(0, 110))
 
     pg.display.update()
     FramePerSec.tick(FPS)
