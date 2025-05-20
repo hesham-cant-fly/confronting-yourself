@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="soniclegsoverlay.png">
+  <SubTexture name="soniclegsoverlay0000" x="72" y="0" width="37" height="27" frameX="-21" frameY="-41" frameWidth="48" frameHeight="48" />
+  <SubTexture name="soniclegsoverlay0001" x="32" y="0" width="40" height="37" frameX="-19" frameY="-27" frameWidth="48" frameHeight="48" />
+  <SubTexture name="soniclegsoverlay0002" x="0" y="0" width="32" height="39" frameX="-10" frameY="-28" frameWidth="48" frameHeight="48" />
+  <SubTexture name="soniclegsoverlay0003" x="0" y="39" width="42" height="32" frameX="-10" frameY="-36" frameWidth="48" frameHeight="48" />
+</TextureAtlas>

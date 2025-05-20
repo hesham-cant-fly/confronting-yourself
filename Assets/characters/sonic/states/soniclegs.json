@@ -1,0 +1,11 @@
+{
+    "image": "soniclegs",
+    "animations": [
+        {
+            "fps": 24,
+            "anim": "idle",
+            "name": "soniclegs soniclegs",
+            "indices": []
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+{
+	"image": "sonic",
+	"animations": [
+		{
+			"loop": true,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "sonic idle"
+		},
+		{
+			"loop": true,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [0, 1],
+			"name": "sonic down"
+		},
+		{
+			"loop": true,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [0, 1],
+			"name": "sonic up"
+		},
+		{
+			"loop": true,
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "sonic left",
+			"indices": [0, 1]
+		},
+		{
+			"loop": true,
+			"anim": "singLEFT",
+			"fps": 15,
+			"name": "sonic right",
+			"indices": [0, 1]
+		}
+	]
+}

@@ -1,0 +1,7 @@
+#+title: Explaining the sprites tree
+
+
+* ={group-name}/=
+** =...{name}.{png,xml}=
+** =states/=
+*** =...{name}.json=

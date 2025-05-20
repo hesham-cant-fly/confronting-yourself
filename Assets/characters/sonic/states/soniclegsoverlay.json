@@ -1,0 +1,11 @@
+{
+    "image": "soniclegsoverlay",
+    "animations": [
+        {
+            "fps": 24,
+            "anim": "idle",
+            "name": "soniclegsoverlay",
+            "indices": []
+        }
+    ]
+}

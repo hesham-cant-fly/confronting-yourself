@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="soniclegs.png">
+  <SubTexture name="soniclegs soniclegs0000" x="0" y="0"   width="29" height="21" />
+  <SubTexture name="soniclegs soniclegs0001" x="49" y="0"  width="29" height="21" />
+  <SubTexture name="soniclegs soniclegs0002" x="0" y="41"  width="29" height="21" />
+  <SubTexture name="soniclegs soniclegs0003" x="48" y="41" width="29" height="21" />
+</TextureAtlas>
