@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Raylib_cs;
 
 public enum NoteKind
 {
@@ -12,88 +13,105 @@ public class ChartBoard
 {
     public float Speed;
     public int BPM;
-    public int CurrentNote = 0;
-    public List<Note> Notes = new();
+    public float CurrentY = 0;
+    public List<(Note, Note)> Notes = new();
+    public int BPS
+    {
+        get => this.BPM * 60;
+    }
 
     public class Note
     {
-        public float Time;
-        public NoteKind Kind;
-        public float Hold;
+        public float Left;
+        public float Down;
+        public float Up;
+        public float Right;
 
-        public Note(float time, NoteKind kind, float hold)
+        public Note(float left = 0, float down = 0, float up = 0, float right = 0)
         {
-            this.Time = time;
-            this.Kind = kind;
-            this.Hold = hold;
-        }
-
-        public Note((float, int, float) t)
-        {
-            this.Time = t.Item1;
-            this.Kind = KindFromInt(t.Item2);
-            this.Hold = t.Item3;
-        }
-
-        private static NoteKind KindFromInt(int i)
-        {
-            switch (i) {
-            case 0:
-                return NoteKind.Left;
-            case 1:
-                return NoteKind.Down;
-            case 2:
-                return NoteKind.Up;
-            case 3:
-                return NoteKind.Right;
-            default:
-                throw new Exception("");
-            }
+            this.Left = left;
+            this.Down = down;
+            this.Up = up;
+            this.Right = right;
         }
     }
-}
 
-class ChartsLoader
-{
     public static ChartBoard LoadFromJSON(string path)
     {
         ChartBoard result = new();
-        ChartsJson j;
-        using (StreamReader reader = new(path))
-        {
-            var jsonContent = reader.ReadToEnd();
-            var jj = JsonConvert.DeserializeObject<ChartsJson>(jsonContent);
-            if (jj == null) throw new Exception("");
-            j = jj;
+        ChartsJson chartsJson;
+        using (StreamReader reader = new(path)) {
+            var string_result = reader.ReadToEnd();
+            var jsonResult = JsonConvert.DeserializeObject<ChartsJson>(string_result);
+            if (jsonResult == null) throw new Exception("");
+            chartsJson = jsonResult;
         }
-
-        result.BPM = j.song.bpm;
-        result.Speed = j.song.speed;
-        foreach (var note in j.song.notes)
-        {
-            foreach (var n in note.sectionNotes)
-            {
-                result.Notes.Add(new(n));
-            }
-        }
+        result.BPM = chartsJson.bpm;
+        result.Speed = chartsJson.speed;
+        result.Notes = (
+            from note in chartsJson.notes
+            select (
+                new Note(note.opponent[0], note.opponent[1], note.opponent[2], note.opponent[3]),
+                new Note(note.player[0], note.player[1], note.player[2], note.player[3])
+            )
+        ).ToList();
         return result;
     }
 
-}
-
-public class ChartsJson
-{
-    public SongJson song = new();
-
-    public class SongJson
+    public List<(Note, Note)> GetIntersects(float noteHeight, float top, float down)
     {
-        public float speed;
-        public int bpm;
-        public List<NoteJson> notes = new();
+        List<(Note, Note)> result = new();
+
+        for (int i = 0; i < Notes.Count(); i++)
+        {
+            float noteY = i * noteHeight;
+            if (noteY <= top + CurrentY && noteY <= down + CurrentY)
+            {
+                result.Add(Notes[i]);
+            }
+            else if (noteY >= down + CurrentY)
+            {
+                break;
+            }
+        }
+
+        return result;
     }
 
-    public class NoteJson
+    public (int, int) GetCurrentRange(float noteHeight, float min, float max)
     {
-        public List<(float, int, float)> sectionNotes = new();
+        if (Notes.Count() == 0)
+            throw new Exception("Not enough notes.");
+
+        int start = -1;
+        int end = -1;
+
+        for (int i = 0; i < Notes.Count(); i++)
+        {
+            float noteY = i * noteHeight;
+            if (noteY >= min + CurrentY && noteY <= max + CurrentY)
+            {
+                if (start == -1)
+                    start = i;
+                end = i;
+            }
+            else if (noteY >= max + CurrentY)
+            {
+                break;
+            }
+        }
+
+        return (start, end);
+    }
+}
+
+public class ChartsJson {
+    public float speed;
+    public int bpm;
+    public List<NoteLineJson> notes = new();
+
+    public class NoteLineJson {
+        public List<float> opponent = new();
+        public List<float> player = new();
     }
 }

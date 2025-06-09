@@ -10,7 +10,6 @@ public class Game
         AppendState(new IntroState(this));
         Raylib.PlayMusicStream(Program.rc.Inst);
         Raylib.PlayMusicStream(Program.rc.Voices);
-        Raylib.SetMusicVolume(Program.rc.Inst, 0);
     }
 
     public void AppendState(State state)
@@ -47,5 +46,10 @@ public class Game
         {
             States[i].Draw();
         }
+    }
+
+    public static explicit operator Game(State? v)
+    {
+        throw new NotImplementedException();
     }
 }

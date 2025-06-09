@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="sonicNotes.png">
+  <Left  x="0"   y="0"   width="154" height="154" />
+  <Down  x="154" y="0"   width="154" height="154" />
+  <Up    x="0"   y="154" width="154" height="154" />
+  <Right x="154" y="154" width="154" height="154" />
+
+  <LeftActive  x="308" y="0"   width="154" height="154" />
+  <DownActive  x="308" y="154" width="154" height="154" />
+  <UpActive    x="0"   y="308" width="154" height="154" />
+  <RightActive x="154" y="308" width="154" height="154" />
+
+  <LeftPress  x="770" y="0"   width="154" height="154" />
+  <DownPress  x="770" y="154" width="154" height="154" />
+  <UpPress    x="770" y="308" width="154" height="154" />
+  <RightPress x="770" y="462" width="154" height="154" />
+
+  <LeftHold  x="128" y="770" width="64" height="75" />
+  <DownHold  x="192" y="770" width="64" height="75" />
+  <UpHold    x="256" y="770" width="64" height="75" />
+  <RightHold x="320" y="770" width="64" height="75" />
+
+  <LeftHoldTail  x="770" y="616" width="64" height="105" />
+  <DownHoldTail  x="834" y="616" width="64" height="105" />
+  <UpHoldTail    x="0"   y="770" width="64" height="105" />
+  <RightHoldTail x="64"  y="770" width="64" height="105" />
+</TextureAtlas>

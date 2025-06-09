@@ -56,6 +56,18 @@ class IntroSection : State
             GamePlay.SonicLegs.Bottom = GamePlay.Sonic.Bottom;
             GamePlay.SonicLegs.Update();
         }
+        if (Parent == null) throw new Exception("");
+        var parent = (GamePlay)Parent;
+        if (parent.IsActive(NoteKind.Left))
+            GamePlay.Sonic.PlayAnimation(AnimationKind.SingLeft);
+        if (parent.IsActive(NoteKind.Down))
+            GamePlay.Sonic.PlayAnimation(AnimationKind.SingDown);
+        if (parent.IsActive(NoteKind.Up))
+            GamePlay.Sonic.PlayAnimation(AnimationKind.SingUp);
+        if (parent.IsActive(NoteKind.Right))
+            GamePlay.Sonic.PlayAnimation(AnimationKind.SingRight);
+        if (parent.CurrentActive.Count() == 0)
+            GamePlay.Sonic.PlayAnimation(AnimationKind.Idle);
     }
 
     public override void Draw()
